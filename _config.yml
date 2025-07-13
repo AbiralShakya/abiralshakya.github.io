@@ -1,0 +1,16 @@
+title: Personal Website
+email: abiral@princeton.edu
+description: >-  
+  A minimal, modern personal website inspired by dshah02.github.io
+baseurl: ""
+url: ""
+markdown: kramdown
+permalink: pretty
+collections:
+  posts:
+    output: true
+  projects:
+    output: true
+plugins:
+  - jekyll-feed
+  - jekyll-seo-tag 
