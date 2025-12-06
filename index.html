@@ -45,12 +45,7 @@
             text-align: center;
         }
 
-        #canvas-container {
-            width: 200px;
-            height: 200px;
-            margin-bottom: 2rem; /* Space between cone and bio */
-        }
-
+      
         /* Container for Bio and Profile Image */
         .intro-section {
             display: flex;
@@ -65,11 +60,12 @@
         }
 
         .profile-image {
-            width: 300px;
-            height: 300px;
+            width: 320px;
+            height: 320px;
             flex-shrink: 0;
             border-radius: 50%; /* Makes the circle */
             object-fit: cover; /* Ensures image isn't squashed */
+            object-position: 50% 28%; /* Keep face centered and hair in frame */
             box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
 
@@ -189,119 +185,6 @@
     <!--    © Abiral Shakya, 2025.-->
     <!--</footer>-->
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script>
-        const container = document.getElementById('canvas-container');
-
-        const scene = new THREE.Scene();
-        const camera = new THREE.PerspectiveCamera(50, 1, 0.1, 1000);
-        camera.position.set(0, 2, 4);
-        camera.lookAt(0, 0, 0);
-
-        const renderer = new THREE.WebGLRenderer({
-            antialias: true,
-            alpha: true
-        });
-        renderer.setSize(200, 200);
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-        renderer.setClearColor(0xffffff, 0);
-        container.appendChild(renderer.domElement);
-
-        const group = new THREE.Group();
-
-        const coneHeight = 1.2;
-        const coneRadius = 1.5;
-        const segments = 48;
-        const rings = 30;
-
-        function createConeGeometry(isUpper) {
-            const geometry = new THREE.BufferGeometry();
-            const vertices = [];
-            const indices = [];
-
-            const sign = isUpper ? 1 : -1;
-
-            for (let ring = 0; ring <= rings; ring++) {
-                const t = ring / rings;
-                const y = sign * t * coneHeight;
-                const r = t * coneRadius;
-
-                for (let seg = 0; seg <= segments; seg++) {
-                    const theta = (seg / segments) * Math.PI * 2;
-                    const x = r * Math.cos(theta);
-                    const z = r * Math.sin(theta);
-
-                    const warp = 1 + 0.08 * Math.cos(6 * theta) * t * t;
-                    vertices.push(x * warp, y, z * warp);
-                }
-            }
-
-            for (let ring = 0; ring < rings; ring++) {
-                for (let seg = 0; seg < segments; seg++) {
-                    const a = ring * (segments + 1) + seg;
-                    const b = a + 1;
-                    const c = a + segments + 1;
-                    const d = c + 1;
-
-                    indices.push(a, b, c);
-                    indices.push(b, d, c);
-                }
-            }
-
-            geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
-            geometry.setIndex(indices);
-            geometry.computeVertexNormals();
-
-            return geometry;
-        }
-
-        const wireMaterial = new THREE.LineBasicMaterial({
-            color: 0x000000,
-            transparent: true,
-            opacity: 0.5
-        });
-
-        const upperConeGeo = createConeGeometry(true);
-        const lowerConeGeo = createConeGeometry(false);
-
-        const upperWireframe = new THREE.WireframeGeometry(upperConeGeo);
-        const lowerWireframe = new THREE.WireframeGeometry(lowerConeGeo);
-
-        const upperLines = new THREE.LineSegments(upperWireframe, wireMaterial);
-        const lowerLines = new THREE.LineSegments(lowerWireframe, wireMaterial);
-
-        group.add(upperLines);
-        group.add(lowerLines);
-
-        const diracPointGeo = new THREE.SphereGeometry(0.03, 16, 16);
-        const diracPointMat = new THREE.MeshBasicMaterial({ color: 0x000000 });
-        const diracPoint = new THREE.Mesh(diracPointGeo, diracPointMat);
-        group.add(diracPoint);
-
-        group.rotation.x = 0.3;
-        scene.add(group);
-
-        let time = 0;
-
-        function animate() {
-            requestAnimationFrame(animate);
-
-            time += 0.003;
-            group.rotation.y = time;
-
-            renderer.render(scene, camera);
-        }
-
-        animate();
-
-        function onResize() {
-            // Keep the canvas size static for the layout, or adjust if needed
-            const width = window.innerWidth <= 600 ? 150 : 200;
-            renderer.setSize(width, width);
-        }
-
-        window.addEventListener('resize', onResize);
-    </script>
 
 </body>
 </html>
