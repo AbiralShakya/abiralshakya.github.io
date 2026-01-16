@@ -1,450 +1,854 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>On Scaling Modern Models on Modern Hardware - Abiral Shakya</title>
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-    <script>
-        window.MathJax = {
-            tex: {
-                inlineMath: [['$', '$'], ['\\(', '\\)']],
-                displayMath: [['$$', '$$'], ['\\[', '\\]']]
-            },
-            svg: { fontCache: 'global' }
-        };
-    </script>
-    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
-    <!-- Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
-        gtag('config', 'G-XXXXXXXXXX');
-    </script>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        body {
-            font-family: Georgia, 'Times New Roman', serif;
-            background: #ffffff;
-            color: #333;
-            line-height: 1.65;
-            padding: 2rem 2rem 4rem;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-        a {
-            color: #8b6d47;
-            text-decoration: none;
-            border-bottom: 1px solid transparent;
-            transition: border-bottom 0.2s;
-        }
-        a:hover {
-            border-bottom: 1px solid #8b6d47;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>On Scaling Modern Models on Modern Hardware - Abiral Shakya</title>
+  <style>
+      * {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+      }
+      body {
+          font-family: Georgia, 'Times New Roman', serif;
+          background: #ffffff;
+          color: #333;
+          line-height: 1.65;
+          padding: 2rem 2rem 4rem;
+          max-width: 1200px;
+          margin: 0 auto;
+      }
+      a {
+          color: #8b6d47;
+          text-decoration: none;
+          border-bottom: 1px solid transparent;
+          transition: border-bottom 0.2s;
+      }
+      a:hover {
+          border-bottom: 1px solid #8b6d47;
+      }
 
-        .nav-back {
-            margin-bottom: 3rem;
-            font-size: 0.9rem;
-        }
-        .nav-back a {
-            color: #666;
-        }
 
-        header {
-            margin-bottom: 3rem;
-            text-align: center;
-        }
-        .title {
-            font-size: 2.2rem;
-            font-weight: 400;
-            margin-bottom: 0.5rem;
-            color: #2c2c2c;
-            line-height: 1.2;
-        }
-        .meta {
-            font-size: 0.95rem;
-            color: #666;
-            font-style: italic;
-        }
 
-        .content {
-            font-size: 1.05rem;
-            line-height: 1.7;
-        }
-        .content p {
-            margin-bottom: 1.4rem;
-        }
-        .content h2 {
-            font-size: 1.6rem;
-            font-weight: 400;
-            margin: 2.5rem 0 1rem 0;
-            color: #2c2c2c;
-        }
-        .content h3 {
-            font-size: 1.3rem;
-            font-weight: 400;
-            margin: 2rem 0 0.8rem 0;
-            color: #2c2c2c;
-        }
-        .content ul {
-            margin: 1rem 0 1.4rem 0;
-            padding-left: 1.5rem;
-        }
-        .content li {
-            margin-bottom: 0.5rem;
-            line-height: 1.6;
-        }
-        .content li::marker {
-            color: #999;
-        }
-        .content code {
-            background: #f8f8f8;
-            padding: 0.2rem 0.4rem;
-            border-radius: 3px;
-            font-family: 'Monaco', 'Menlo', monospace;
-            font-size: 0.9em;
-            border: 1px solid #e8e8e8;
-        }
-        .content pre {
-            background: #f8f8f8;
-            padding: 1.2rem;
-            border-radius: 4px;
-            overflow-x: auto;
-            margin: 1.4rem 0;
-            border: 1px solid #e8e8e8;
-            font-size: 0.9em;
-        }
-        .content pre code {
-            background: none;
-            padding: 0;
-            border: none;
-        }
-        .content blockquote {
-            border-left: 4px solid #8b6d47;
-            padding-left: 1.2rem;
-            margin: 1.4rem 0;
-            color: #555;
-            font-style: italic;
-            background: #fafafa;
-            padding: 1rem 1.2rem;
-            border-radius: 0 4px 4px 0;
-        }
-        .content .math {
-            text-align: center;
-            margin: 1.5rem 0;
-        }
-        .content .math-display {
-            display: block;
-            text-align: center;
-            margin: 1.5rem 0;
-        }
 
-        /* MathJax specific styling */
-        .mjx-chtml {
-            font-size: 1.1em !important;
-        }
+      .nav-back {
+          margin-bottom: 3rem;
+          font-size: 0.9rem;
+      }
 
-        @media (max-width: 1024px) {
-            body {
-                padding: 1.5rem 1.5rem 3rem;
-            }
-            .title {
-                font-size: 1.8rem;
-            }
-            .content {
-                font-size: 1rem;
-            }
-        }
 
-        /* Custom styles for equations */
-        .equation {
-            text-align: center;
-            margin: 1.5rem 0;
-        }
-        .equation-number {
-            float: right;
-            font-size: 0.9em;
-            color: #666;
-        }
 
-        /* MathJax styling */
-        .mjx-chtml {
-            font-size: 1.1em !important;
-        }
-        .MathJax {
-            font-size: 1.1em !important;
-        }
-    </style>
+
+      header {
+          margin-bottom: 3rem;
+          text-align: center;
+      }
+      .title {
+          font-size: 2.2rem;
+          font-weight: 400;
+          margin-bottom: 0.5rem;
+          color: #2c2c2c;
+          line-height: 1.2;
+      }
+      .meta {
+          font-size: 0.95rem;
+          color: #666;
+          font-style: italic;
+      }
+
+
+
+
+      .content {
+          font-size: 1.05rem;
+          line-height: 1.7;
+      }
+      .content p {
+          margin-bottom: 1.4rem;
+      }
+      .content h2 {
+          font-size: 1.6rem;
+          font-weight: 400;
+          margin: 2.5rem 0 1rem 0;
+          color: #2c2c2c;
+      }
+      .content h3 {
+          font-size: 1.3rem;
+          font-weight: 400;
+          margin: 2rem 0 0.8rem 0;
+          color: #2c2c2c;
+      }
+      .content ul {
+          margin: 1rem 0 1.4rem 0;
+          padding-left: 1.5rem;
+      }
+      .content li {
+          margin-bottom: 0.5rem;
+          line-height: 1.6;
+      }
+      .content li::marker {
+          color: #999;
+      }
+      .content code {
+          background: #f8f8f8;
+          padding: 0.2rem 0.4rem;
+          border-radius: 3px;
+          font-family: 'Monaco', 'Menlo', monospace;
+          font-size: 0.9em;
+          border: 1px solid #e8e8e8;
+      }
+      .content pre {
+          background: #f8f8f8;
+          padding: 1.2rem;
+          border-radius: 4px;
+          overflow-x: auto;
+          margin: 1.4rem 0;
+          border: 1px solid #e8e8e8;
+          font-size: 0.9em;
+      }
+      .content pre code {
+          background: none;
+          padding: 0;
+          border: none;
+      }
+      .content blockquote {
+          border-left: 4px solid #8b6d47;
+          padding-left: 1.2rem;
+          margin: 1.4rem 0;
+          color: #555;
+          font-style: italic;
+          background: #fafafa;
+          padding: 1rem 1.2rem;
+          border-radius: 0 4px 4px 0;
+      }
+
+
+
+
+      /* Math styling - using CSS to make equations look better */
+      .math {
+          font-family: 'Times New Roman', serif;
+          font-style: italic;
+          background: #f9f9f9;
+          padding: 0.5rem;
+          border-radius: 4px;
+          margin: 1rem 0;
+          border: 1px solid #e8e8e8;
+      }
+
+
+
+
+      @media (max-width: 1024px) {
+          body {
+              padding: 1.5rem 1.5rem 3rem;
+          }
+          .title {
+              font-size: 1.8rem;
+          }
+          .content {
+              font-size: 1rem;
+          }
+      }
+  </style>
 </head>
 <body>
-    <div class="nav-back">
-        <a href="../index.html">← Back to home</a>
-    </div>
+  <div class="nav-back">
+      <a href="../index.html">← Back to home</a>
+  </div>
 
-    <header>
-        <h1 class="title">On Scaling Modern Models on Modern Hardware</h1>
-        <div class="meta">01.15.2026</div>
-    </header>
 
-    <div class="content">
-        <div id="markdown-content">
-            <!-- Content will be inserted here by JavaScript -->
-        </div>
-    </div>
 
-    <script>
-        // Raw markdown content
-        // Use String.raw to prevent JS from interpreting backslashes (e.g., \t as tab)
-        const markdownContent = String.raw`## On Scaling Modern Models on Modern Hardware
 
-01.15.2026
+  <!-- <header>
+      <h1 class="title">On Scaling Modern Models on Modern Hardware</h1>
+      <div class="meta">01.15.2026</div>
+  </header> -->
 
-Winter break in college is pretty nice. Five weeks is long enough that you can actually sit with ideas. My goal over break was pretty simple: get more competent at machine learning and hardware, independently at first, and then at the intersection.
 
-While digging through recent work, I watched an outstanding NeurIPS 2025 talk by Beidi Chen, Zhuoming Chen, and Azalia Mirhoseini on scaling test-time compute. I ended up going down the rabbit hole of the papers and ideas they referenced. This post is heavily inspired by that talk, but it's really my attempt to reconcile three things that often get discussed separately: how models scale, how inference actually runs on hardware, and why test-time "reasoning" behaves very differently in theory versus practice.
 
-Most scaling discussions start with the classic picture: increase parameters, data, or training compute, and performance improves smoothly. That story was largely correct for pretraining. But test-time scaling introduced a new axis: instead of making the model bigger or training longer, we let the model think longer at inference. Chain-of-thought prompting, self-consistency, best-of-N sampling, verifier-guided decoding, tree search, and multi-agent debate all fall into this category. The intuition is that inference can act as a form of depth amplification. A fixed network, unrolled longer, can approximate more complex computations.
 
-At a high level, this is true. But the hardware cost model underneath it is very different from training, and that difference dominates everything.
+  <div class="content">
+      <h2>On Scaling Modern Models on Modern Hardware</h2>
+      <p><em>01.15.2026</em></p>
 
-During training, the dominant cost is matrix multiplication. Compute scales roughly as:
 
-$$ \text{FLOPs}_{\text{train}} \approx 6 \cdot P \cdot T $$
 
-where $P$ is the number of parameters and $T$ is the number of training tokens. Training kernels are dense, highly reusable, and close to peak FLOPs on modern accelerators. This is why scaling laws based on FLOPs worked so well for pretraining.
 
-Inference is not training.
+      <p>Winter break in college is pretty nice. Five weeks is long enough that you can actually sit with ideas. My goal over break was pretty simple: get more competent at machine learning and hardware, independently at first, and then at the intersection.</p>
 
-Inference splits into two regimes: prefill and decode. Prefill processes the prompt. Decode generates one token at a time.
 
-Prefill looks like training without gradients. It is compute-heavy and amortizes memory well. Decode does not.
 
-During decode, each new token attends to all previous tokens. The key-value cache grows linearly with sequence length, and every decode step streams that cache from memory.
 
-To reason about this properly, you need the roofline model.
+      <p>While digging through recent work, I watched an outstanding NeurIPS 2025 talk by Beidi Chen, Zhuoming Chen, and Azalia Mirhoseini on scaling test-time compute. I ended up going down the rabbit hole of the papers and ideas they referenced. This post is heavily inspired by that talk, but it's really my attempt to reconcile three things that often get discussed separately: how models scale, how inference actually runs on hardware, and why test-time "reasoning" behaves very differently in theory versus practice.</p>
 
-Any kernel has an arithmetic intensity:
 
-$$ I = \frac{\text{FLOPs}}{\text{bytes}_{\text{moved}}} $$
 
-Hardware provides two ceilings:
 
--- peak compute $C_{\text{max}}$ (FLOPs/s)
+      <p>Most scaling discussions start with the classic picture: increase parameters, data, or training compute, and performance improves smoothly. That story was largely correct for pretraining. But test-time scaling introduced a new axis: instead of making the model bigger or training longer, we let the model think longer at inference. Chain-of-thought prompting, self-consistency, best-of-N sampling, verifier-guided decoding, tree search, and multi-agent debate all fall into this category. The intuition is that inference can act as a form of depth amplification. A fixed network, unrolled longer, can approximate more complex computations.</p>
 
--- peak bandwidth $B_{\text{max}}$ (bytes/s)
 
-Achieved performance is
 
-$$ \text{Perf} = \min(C_{\text{max}}, B_{\text{max}} \cdot I) $$
 
-The ridge point is
+      <p>At a high level, this is true. But the hardware cost model underneath it is very different from training, and that difference dominates everything.</p>
 
-$$ I_{\text{ridge}} = \frac{C_{\text{max}}}{B_{\text{max}}} $$
 
-For an H100:
 
-$$ C_{\text{max}} \approx 1979 \, \text{TFLOPs (FP16)} \quad \text{and} \quad B_{\text{max}} \approx 3.35 \, \text{TB/s} $$
 
-Thus $I_{\text{ridge}} \approx 590 \, \text{FLOPs/byte}$
+      <h2>Training vs Inference Cost</h2>
 
-Anything below this is memory-bound. Now consider attention during decode.
 
-One query attends over $L$ past tokens with head dimension $d$.
 
-Compute:
 
-QK$^\text{T}$: $2 \cdot d \cdot L$ FLOPs
+      <p>During training, the dominant cost is matrix multiplication. Compute scales roughly as:</p>
 
-softmax $\times$ V: $2 \cdot d \cdot L$ FLOPs
 
-Total FLOPs $\approx 4 d L$
 
-Memory:
 
-Load K: $L \cdot d \cdot 2$ bytes
+      <div class="math">
+      FLOPs_train ≈ 6 · P · T
+      </div>
 
-Load V: $L \cdot d \cdot 2$ bytes
 
-Total bytes $\approx 4 d L$
 
-Arithmetic intensity:
 
-$$ I_{\text{attention}} \approx 1 \, \text{FLOP/byte} $$
+      <p>where P is the number of parameters and T is the number of training tokens. Training kernels are dense, highly reusable, and close to peak FLOPs on modern accelerators. This is why scaling laws based on FLOPs worked so well for pretraining.</p>
 
-The Kinetics paper formalizes this with an effective FLOPs model. Instead of counting raw computation, they convert memory traffic into compute-equivalent cost:
 
-$$ \text{eFLOPs} = C_{\text{comp}} + C_{\text{mem}} \cdot I_{\text{ridge}} $$
 
-For decode, $C_{\text{mem}}$ dominates. Even if the arithmetic FLOPs are small, the memory traffic multiplied by $I_{\text{ridge}}$ overwhelms them.
 
-This breaks older test-time scaling models.
+      <p>Inference is not training.</p>
 
-Earlier work implicitly assumed inference cost scaled like
 
-$$ \text{Cost} \propto P \cdot L_{\text{out}} $$
 
-parameters times number of output tokens. Under that model, a small model reasoning longer should always beat a large model reasoning shorter.
 
-That assumption is wrong because it ignores attention.
+      <p>Inference splits into two regimes: prefill and decode. Prefill processes the prompt. Decode generates one token at a time.</p>
 
-A more accurate decode cost model is
 
-$$ \text{Cost} \propto P \cdot L_{\text{out}} + D \cdot L_{\text{out}}^2 $$
 
-where $D$ is the per-layer KV cache dimension. Once $L_{\text{out}}$ is large, the quadratic term dominates regardless of parameter count.
 
-This leads to a counterintuitive but crucial result: small models are penalized twice at long test-time horizons.
+      <p>Prefill looks like training without gradients. It is compute-heavy and amortizes memory well. Decode does not.</p>
 
-First, they often require longer chains of thought to match the reasoning capability of larger models, increasing $L_{\text{out}}$. Second, their KV cache does not scale down proportionally with parameters.
 
-For a 32K context window, approximate KV cache sizes look like this:
 
-- 0.6B model: $\sim$3.5 GB
-- 4B model: $\sim$4.2 GB
-- 14B model: $\sim$6.3 GB
-- 32B model: $\sim$8.1 GB
 
-The KV cache grows slowly with parameters, while compute grows linearly. As a result, the KV-to-parameter ratio is worst for small models.
+      <p>During decode, each new token attends to all previous tokens. The key-value cache grows linearly with sequence length, and every decode step streams that cache from memory.</p>
 
-Empirically, this produces crossover points. Kinetics reports that for DeepSeek-style models, the optimal parameter count under a fixed inference budget is around 7B. For Qwen-style models, it is closer to 14B. Below these sizes, extending test-time reasoning hurts efficiency more than it helps.
 
-You can see this numerically. Compare two strategies under a fixed budget.
 
-**Old model:**
 
-4B parameters, 24K output tokens
-$$ \text{Cost}_{\text{old}} \approx 4B \cdot 24K = 96B \, \text{units} $$
+      <h2>The Roofline Model</h2>
 
-14B parameters, 8K output tokens
-$$ \text{Cost}_{\text{old}} \approx 14B \cdot 8K = 112B \, \text{units} $$
 
-The small model looks cheaper.
 
-Now include attention:
 
-4B model:
-$$ \text{Cost} \approx 4B \cdot 24K + D_{4B} \cdot (24K)^2 $$
+      <p>To reason about this properly, you need the roofline model.</p>
 
-14B model:
-$$ \text{Cost} \approx 14B \cdot 8K + D_{14B} \cdot (8K)^2 $$
 
-Even if $D_{14B} > D_{4B}$, the quadratic term dominates. The $9\times$ reduction in $L_{\text{out}}^2$ overwhelms parameter differences.
 
-This is why naive "let small models think longer" arguments collapse at scale.
 
-The only real way out is to reduce or eliminate the quadratic term.
+      <p>Any kernel has an arithmetic intensity:</p>
 
-This is exactly what sparse attention attempts. By restricting attention to a bounded window or block structure, the dominant term becomes
 
-$$ O(L_{\text{out}} \cdot B \cdot D) $$
 
-instead of
 
-$$ O(L_{\text{out}}^2 \cdot D) $$
+      <div class="math">
+      I = FLOPs / bytes_moved
+      </div>
 
-Kinetics reports $11\times$ to $26\times$ speedups on H200 with sparse attention. Once the quadratic term is removed, small models become competitive again, and test-time scaling starts to resemble earlier scaling law predictions.
 
-This also reframes the entire discussion around test-time strategies like verification, best-of-N sampling, and tree search.
 
-These methods are often described abstractly as "more reasoning." In practice, they multiply decode passes. If each decode is memory bound and quadratic in context length, these strategies are expensive in a very specific way. The cost is not just more tokens. It is more streaming of KV caches.
 
-This is why verifier guided approaches only make sense when the verifier is cheap relative to the generator, and when partial reuse of KV state is possible. It is also why methods that branch early and prune aggressively matter much more than those that simply sample many full completions.
+      <p>Hardware provides two ceilings:</p>
+      <ul>
+      <li>peak compute C_max (FLOPs/s)</li>
+      <li>peak bandwidth B_max (bytes/s)</li>
+      </ul>
 
-At this point, the bottleneck is no longer algorithmic in the abstract. It is architectural.
 
-Decode performance today is limited by memory bandwidth and kernel launch efficiency, not by arithmetic throughput. Attention kernels are dominated by HBM reads. KV cache layout, fusion, and reuse matter more than parameter count. Techniques like paged attention, flash decoding, and speculative decoding are not "optimizations." They are the difference between feasible and infeasible test-time compute.
 
-This naturally points toward hardware co-design.
 
-If inference is the dominant cost, then models should be designed for inference first, not adapted from architectures optimal for training. This means fewer layers with higher per-layer capacity, attention mechanisms that minimize KV traffic, explicit separation between fast motor control and slow semantic reasoning, and architectures that allow aggressive caching and reuse.
+      <p>Achieved performance is:</p>
 
-On the hardware side, this means accelerators optimized for low latency memory access, larger on-chip SRAM for KV storage, better support for sparse and block-structured kernels, and scheduling mechanisms that reduce kernel launch overhead at small batch sizes. Peak FLOPs matter less than sustained bandwidth utilization and tail latency.
 
-The deeper implication is that test-time scaling is not just a modeling problem. It is a systems problem. The shape of future progress will be determined as much by kernel fusion, memory hierarchies, and deployment constraints as by clever prompting or new loss functions.
 
-This is where the recent Ma and Patterson paper becomes essential reading. Their argument is stark: LLM inference is a crisis, and the hardware philosophy that got us here---full-reticle dies with astronomical FLOPs, banks of HBM, bandwidth-optimized interconnect---is fundamentally mismatched to decode.
 
-Patterson opens with a telling observation. When he started his career in 1976, roughly 40\% of papers at computer architecture conferences came from industry. By ISCA 2025, that share had collapsed to under 4\%. The research community and the systems running inference at scale have drifted apart.
+      <div class="math">
+      Perf = min(C_max, B_max · I)
+      </div>
 
-Ma and Patterson enumerate six trends compounding the problem. Mixture of Experts expands memory footprint and communication overhead---training wins, inference pays. Reasoning models push $L_{\text{out}}$ into regimes where the quadratic term dominates everything. Multimodal generation demands larger data types. Long context means more KV cache to stream. RAG injects external knowledge as additional context. Diffusion is the exception---it demands more FLOPs rather than more bandwidth---but that exception proves the rule.
 
-They distill the crisis into two challenges. First, memory. HBM is increasingly expensive: both \$/GB capacity and \$/GBps bandwidth grew $1.35\times$ from 2023 to 2025. DRAM density scaling is decelerating. SRAM-only solutions like Cerebras and Groq could not scale to modern LLM sizes and had to retrofit external DRAM. Second, latency. Before LLMs, datacenter inference ran on single chips. Now it requires multi-chip systems with frequent communication. For small, frequent messages, latency trumps bandwidth. The interconnects designed for training optimize for the wrong metric.
 
-Their proposed directions follow logically. High Bandwidth Flash stacks flash dies like HBM, achieving $10\times$ capacity with HBM-like bandwidth---suitable for frozen weights and slow-changing context, though not for rapidly-updated KV caches. Processing-Near-Memory places compute logic adjacent to memory dies rather than on them, allowing $1000\times$ larger shards than Processing-In-Memory and dramatically simplifying the software story. 3D compute-logic stacking shortens data paths for $2-3\times$ lower power at the same bandwidth. Low-latency interconnect rethinks network topology for small frequent messages rather than large bulk transfers.
 
-Their treatment of diffusion deserves special attention. Diffusion models generate all output tokens in one step then iteratively denoise. Each denoising step is light on compute, heavy on memory movement, especially at small batch sizes. Diffusion shares the fundamental structure of autoregressive decode: many small steps, each dependent on the previous, with limited batching opportunities. This is almost the worst-case scenario for conventional GPUs. From this angle, diffusion hardware is not a niche concern. It is a proxy for where inference-heavy AI systems are headed.
+      <p>The ridge point is:</p>
 
-This is also where GPU kernels start to matter in a very concrete way. Much of the discussion around test-time scaling treats the model as an abstract function. In practice, the performance envelope is set by a small number of kernels: attention, layernorm, matmuls, KV cache reads and writes. During decode, attention dominates, and attention is constrained by how efficiently we can move KV data through HBM and registers.
 
-This is why kernel level innovations have had outsized impact compared to many architectural changes. They do not improve the model in a theoretic sense. They change the arithmetic intensity of the workload. They push decode closer to the ridge point of the roofline model, even if only marginally. When inference is memory-bound, a $2\times$ reduction in memory traffic can matter more than a $10\times$ increase in FLOPs.
 
-FlashAttention, from Tri Dao and collaborators, introduced what should have been an obvious principle: attention algorithms should be IO-aware. Standard attention computes QK$^\text{T}$, stores the full N$\times$N matrix to HBM, applies softmax, then multiplies by V. Three kernel launches. Two round-trips of a massive intermediate matrix through memory.
 
-FlashAttention fuses everything into a single kernel using two techniques. Tiling loops through blocks of K and V, loading them from HBM to fast on-chip SRAM, computing local attention scores, and incrementally updating the output without materializing the full matrix. Online softmax computes running statistics so softmax can be applied incrementally, rescaling at the end for exact results.
+      <div class="math">
+      I_ridge = C_max / B_max
+      </div>
 
-The IO complexity drops from $\Theta(Nd + N^2)$ HBM accesses to $O(N^2d^2M^{-1})$, where $M$ is SRAM size. For typical values, this means up to $9\times$ fewer HBM accesses. Wall-clock speedups of $2-4\times$ follow directly.
 
-FlashAttention-2 restructured the algorithm for better parallelism, achieving up to 70\% theoretical max FLOPs on A100. FlashAttention-3 targets Hopper, exploiting asynchronous WGMMA and TMA instructions to overlap memory movement with arithmetic, interleaving block-wise matmul with softmax computation, and supporting FP8 with block quantization for accuracy. The result: $1.6-2.0\times$ speedup over FlashAttention-2 in FP16, close to 1.2 PFLOPS in FP8.
 
-FlashInfer, from Zihao Ye and collaborators, addresses a different problem: production inference faces heterogeneous workloads that no single kernel handles optimally. Prefill is compute-bound; decode is memory-bound. Batched inference differs from single-request. Sparse attention patterns from KV-cache pruning methods need specialized handling. Multi-head attention, grouped-query attention, and multi-head latent attention all have different optimal configurations.
 
-FlashInfer sits between inference frameworks and kernel implementations, routing workloads to appropriate backends. Its key contributions: a unified block-sparse format that handles paged attention, prefix sharing, and explicit sparsity with the same kernel; JIT compilation that specializes kernels at runtime rather than pre-compiling every configuration; load-balanced scheduling that partitions variable-length requests into uniform tiles; and cascade attention that computes shared KV segments once rather than reloading them per-request.
+      <p>For an H100:</p>
 
-The performance numbers justify the complexity: 29-69\% inter-token-latency reduction versus Triton backends, 28-30\% latency reduction for long-context inference, 13-17\% speedup for parallel generation.
 
-Once we look at things through this lens, it becomes clear that many "model" ideas are actually kernel ideas in disguise. Sparse attention is not just a modeling choice. It is a statement about memory access patterns. Hierarchical reasoning is not just cognitive inspiration. It is a way to decouple fast, bandwidth-sensitive loops from slow, compute-heavy ones. Even chain-of-thought length is a hardware parameter once decode dominates cost.
 
-I am also very interested in recent advances in continual learning, especially work that reframes adaptation as something that happens at inference rather than through explicit retraining. The recent paper on end-to-end test-time training for long context takes this further than previous approaches.
 
-The core reframing: what if long-context modeling is not an architecture design problem but a continual learning problem?
+      <div class="math">
+      C_max ≈ 1979 TFLOPs (FP16) and B_max ≈ 3.35 TB/s
+      </div>
 
-Standard approaches build architectures that attend over more tokens---full attention with extrapolating position embeddings, sparse patterns, or recurrent alternatives like Mamba. TTT-E2E takes a different path. Use a standard Transformer with sliding-window attention, constant cost per token. But let the model continue learning at inference via next-token prediction on incoming context. Compress context into weights rather than storing it in a KV cache.
 
-The architecture creates two memory systems. Short-term memory comes from sliding-window attention over a fixed window, say 8K tokens. This is the model's working memory for recent syntax and local references, with $O(1)$ cost per token. Long-term memory comes from updated MLP weights. As the window advances and tokens fall out of view, TTT-E2E takes gradient steps on next-token prediction loss, updating only the MLP layers in the final quarter of model blocks.
 
-Training uses meta-learning to optimize initial weights for test-time adaptation. The inner loop processes context as a stream at test time, updating dynamic MLPs via gradient descent. The outer loop at training time optimizes initial weights so adaptation is fast and effective. This requires gradients of gradients.
 
-A dual-track MLP design prevents catastrophic forgetting. Each TTT block has a static MLP frozen at inference, preserving pretrained capabilities, and a dynamic MLP updated during test-time training to store document-specific information.
+      <p>Thus I_ridge ≈ 590 FLOPs/byte</p>
 
-The results directly address the scaling problem I outlined earlier. TTT-E2E scales with context length like full attention does, while efficient alternatives plateau. At 128K context, Mamba 2, GatedDeltaNet, and vanilla sliding-window attention hit a ceiling around 32K tokens. TTT-E2E matches full attention's scaling and actually achieves slightly lower loss for 3B models. The authors attribute this to a more focused task: full attention must generalize across all future tokens, while TTT-E2E only needs to be good at the present mini-batch since adaptation produces new weights for future tokens.
 
-The latency results are striking. TTT-E2E maintains constant inference latency regardless of context length. At 128K context, $2.7\times$ speedup over full attention. At 2M context, $35\times$ speedup. It is fundamentally $O(1)$ per token, like an RNN, but with full-attention-like scaling in loss.
 
-The limitations are real. Training is $3.4\times$ slower than standard pretraining at short contexts due to gradients of gradients, though this inverts at long contexts where full attention's quadratic cost dominates. Precise retrieval suffers---TTT-E2E underperforms full attention on needle-in-a-haystack tasks because it prioritizes compression over verbatim recall. The current implementation cannot use FlashAttention during training because the standard API does not support gradients of gradients.
 
-From the perspective of everything above, it is worth being precise about what problem this actually solves. Test-time training reduces distribution shift by letting the model adjust, but it does not fundamentally change the cost structure of inference. If adaptation itself requires backpropagation, auxiliary optimizers, or multiple forward passes per token, then it is still competing for the same scarce resource: memory bandwidth and latency at decode. In other words, continual learning helps what the model computes, but not how expensively it computes it.
+      <p>Anything below this is memory-bound. Now consider attention during decode.</p>
 
-What becomes interesting is combining these ideas: inference-time adaptation mechanisms that are explicitly designed to be bandwidth-aware. For example, updates that operate on compressed state, low rank adapters, or statistics already resident in on-chip memory. If test time training can be expressed as small, local updates that reuse KV or intermediate activations rather than restreaming them, then it starts to fit naturally into the inference first framing. Otherwise, it risks becoming another form of "reasoning" that looks good algorithmically but collapses under deployment constraints.
 
-The implication is that the next phase of progress is unlikely to come from scaling any single axis in isolation. Bigger models help, but only until decode dominates. More test-time compute helps, but only until memory bandwidth collapses efficiency. Better algorithms help, but only if they map cleanly onto hardware realities.
 
-What seems increasingly necessary is co-design: inference-first models, kernels designed alongside architectures, and hardware that treats memory movement as a first-class constraint rather than an afterthought. That might mean models with fewer layers and more expressive per-layer computation, attention mechanisms that aggressively bound context, or even new execution models that blur the line between training and inference without paying the full cost of either.
 
-I don't think the takeaway is that test-time compute is a dead end. It's very much the opposite and it's not just a prompting trick. Traditionally, an $L$ layer transformer is mathematically a circuit with depth $L$. With test time compute, generating $T$ chain-of-thought tokens allows the model to achieve $L \times T$ total sequential operations, effectively changing a fixed depth architecture into a circuit with depth $L \times T$. We know this is the fundamental paradigm OpenAI's o1 and o3, DeepSeek-R1, and other reasoning models use, but there is still lots of cool research and engineering to do.
+      <p>One query attends over L past tokens with head dimension d.</p>
 
-Training scaling got us to the frontier. Whether we can actually use that capability at scale is going to be decided by inference, kernels, and hardware.
 
-If we want models that reason more at inference, we need architectures that make reasoning cheap, not just possible. That means inference-first model design, explicit cost models during training, and hardware-aware objectives. Training scaling got us to the current frontier, but more efficient reasoning is going to push this frontier. These are the problems I'm currently most excited to work on.`;
 
-        // Render Markdown and then trigger MathJax typeset
-        document.addEventListener("DOMContentLoaded", () => {
-            const target = document.getElementById('markdown-content');
 
-            // 1. Parse the Markdown into HTML
-            target.innerHTML = marked.parse(markdownContent);
+      <p>Compute:</p>
+      <p>QK^T: 2 · d · L FLOPs</p>
+      <p>softmax × V: 2 · d · L FLOPs</p>
+      <p>Total FLOPs ≈ 4 d L</p>
 
-            // 2. Tell MathJax to process the newly injected HTML
-            if (window.MathJax) {
-                MathJax.typesetPromise([target]).catch((err) => console.log("MathJax error:", err.message));
-            }
-        });
-    </script>
+
+
+
+      <p>Memory:</p>
+      <p>Load K: L · d · 2 bytes</p>
+      <p>Load V: L · d · 2 bytes</p>
+      <p>Total bytes ≈ 4 d L</p>
+
+
+
+
+      <p>Arithmetic intensity:</p>
+
+
+
+
+      <div class="math">
+      I_attention ≈ 1 FLOP/byte
+      </div>
+
+
+
+
+      <p>This is not close to the ridge point. It is nearly three orders of magnitude below it. Decode attention is very memory bound. This immediately explains several empirical facts that otherwise feel mysterious. GPUs are mostly idle during decode. Increasing peak FLOPs barely helps. Bandwidth dominates. Any argument about inference efficiency that ignores this is incomplete.</p>
+
+
+
+
+      <h2>The Effective FLOPs Model</h2>
+
+
+
+
+      <p>The Kinetics paper formalizes this with an effective FLOPs model. Instead of counting raw computation, they convert memory traffic into compute-equivalent cost:</p>
+
+
+
+
+      <div class="math">
+      eFLOPs = C_comp + C_mem · I_ridge
+      </div>
+
+
+
+
+      <p>For decode, C_mem dominates. Even if the arithmetic FLOPs are small, the memory traffic multiplied by I_ridge overwhelms them.</p>
+
+
+
+
+      <p>This breaks older test-time scaling models.</p>
+
+
+
+
+      <h2>The Quadratic Cost Problem</h2>
+
+
+
+
+      <p>Earlier work implicitly assumed inference cost scaled like:</p>
+
+
+
+
+      <div class="math">
+      Cost ∝ P · L_out
+      </div>
+
+
+
+
+      <p>parameters times number of output tokens. Under that model, a small model reasoning longer should always beat a large model reasoning shorter.</p>
+
+
+
+
+      <p>That assumption is wrong because it ignores attention.</p>
+
+
+
+
+      <p>A more accurate decode cost model is:</p>
+
+
+
+
+      <div class="math">
+      Cost ∝ P · L_out + D · L_out²
+      </div>
+
+
+
+
+      <p>where D is the per-layer KV cache dimension. Once L_out is large, the quadratic term dominates regardless of parameter count.</p>
+
+
+
+
+      <p>This leads to a counterintuitive but crucial result: small models are penalized twice at long test-time horizons.</p>
+
+
+
+
+      <p>First, they often require longer chains of thought to match the reasoning capability of larger models, increasing L_out. Second, their KV cache does not scale down proportionally with parameters.</p>
+
+
+
+
+      <p>For a 32K context window, approximate KV cache sizes look like this:</p>
+      <ul>
+      <li>0.6B model: ~3.5 GB</li>
+      <li>4B model: ~4.2 GB</li>
+      <li>14B model: ~6.3 GB</li>
+      <li>32B model: ~8.1 GB</li>
+      </ul>
+
+
+
+
+      <p>The KV cache grows slowly with parameters, while compute grows linearly. As a result, the KV-to-parameter ratio is worst for small models.</p>
+
+
+
+
+      <p>Empirically, this produces crossover points. Kinetics reports that for DeepSeek-style models, the optimal parameter count under a fixed inference budget is around 7B. For Qwen-style models, it is closer to 14B. Below these sizes, extending test-time reasoning hurts efficiency more than it helps.</p>
+
+
+
+
+      <p>You can see this numerically. Compare two strategies under a fixed budget.</p>
+
+
+
+
+      <h3>Old Model</h3>
+      <p>4B parameters, 24K output tokens</p>
+      <div class="math">
+      Cost_old ≈ 4B · 24K = 96B units
+      </div>
+
+
+
+
+      <p>14B parameters, 8K output tokens</p>
+      <div class="math">
+      Cost_old ≈ 14B · 8K = 112B units
+      </div>
+
+
+
+
+      <p>The small model looks cheaper.</p>
+
+
+
+
+      <p>Now include attention:</p>
+
+
+
+
+      <p>4B model:</p>
+      <div class="math">
+      Cost ≈ 4B · 24K + D_4B · (24K)²
+      </div>
+
+
+
+
+      <p>14B model:</p>
+      <div class="math">
+      Cost ≈ 14B · 8K + D_14B · (8K)²
+      </div>
+
+
+
+
+      <p>Even if D_14B > D_4B, the quadratic term dominates. The 9× reduction in L_out² overwhelms parameter differences.</p>
+
+
+
+
+      <p>This is why naive "let small models think longer" arguments collapse at scale.</p>
+
+
+
+
+      <h2>Sparse Attention as the Solution</h2>
+
+
+
+
+      <p>The only real way out is to reduce or eliminate the quadratic term.</p>
+
+
+
+
+      <p>This is exactly what sparse attention attempts. By restricting attention to a bounded window or block structure, the dominant term becomes:</p>
+
+
+
+
+      <div class="math">
+      O(L_out · B · D)
+      </div>
+
+
+
+
+      <p>instead of:</p>
+
+
+
+
+      <div class="math">
+      O(L_out² · D)
+      </div>
+
+
+
+
+      <p>Kinetics reports 11× to 26× speedups on H200 with sparse attention. Once the quadratic term is removed, small models become competitive again, and test-time scaling starts to resemble earlier scaling law predictions.</p>
+
+
+
+
+      <p>This also reframes the entire discussion around test-time strategies like verification, best-of-N sampling, and tree search.</p>
+
+
+
+
+      <p>These methods are often described abstractly as "more reasoning." In practice, they multiply decode passes. If each decode is memory bound and quadratic in context length, these strategies are expensive in a very specific way. The cost is not just more tokens. It is more streaming of KV caches.</p>
+
+
+
+
+      <p>This is why verifier guided approaches only make sense when the verifier is cheap relative to the generator, and when partial reuse of KV state is possible. It is also why methods that branch early and prune aggressively matter much more than those that simply sample many full completions.</p>
+
+
+
+
+      <p>At this point, the bottleneck is no longer algorithmic in the abstract. It is architectural.</p>
+
+
+
+
+      <h2>Hardware Co-Design</h2>
+
+
+
+
+      <p>Decode performance today is limited by memory bandwidth and kernel launch efficiency, not by arithmetic throughput. Attention kernels are dominated by HBM reads. KV cache layout, fusion, and reuse matter more than parameter count. Techniques like paged attention, flash decoding, and speculative decoding are not "optimizations." They are the difference between feasible and infeasible test-time compute.</p>
+
+
+
+
+      <p>This naturally points toward hardware co-design.</p>
+
+
+
+
+      <p>If inference is the dominant cost, then models should be designed for inference first, not adapted from architectures optimal for training. This means fewer layers with higher per-layer capacity, attention mechanisms that minimize KV traffic, explicit separation between fast motor control and slow semantic reasoning, and architectures that allow aggressive caching and reuse.</p>
+
+
+
+
+      <p>On the hardware side, this means accelerators optimized for low latency memory access, larger on-chip SRAM for KV storage, better support for sparse and block-structured kernels, and scheduling mechanisms that reduce kernel launch overhead at small batch sizes. Peak FLOPs matter less than sustained bandwidth utilization and tail latency.</p>
+
+
+
+
+      <p>The deeper implication is that test-time scaling is not just a modeling problem. It is a systems problem. The shape of future progress will be determined as much by kernel fusion, memory hierarchies, and deployment constraints as by clever prompting or new loss functions.</p>
+
+
+
+
+      <h2>Ma and Patterson’s paper on hardware for LLM inference</h2>
+
+
+
+
+      <p>This is where the recent Ma and Patterson paper becomes essential reading. Their argument follows as LLM inference is a crisis, and the hardware philosophy that we currently operate with (very high FLOPs, banks of HBM, bandwidth-optimized interconnect) is fundamentally mismatched to decode.</p>
+
+
+
+
+      <p>Patterson opens with a telling observation. When he started his career in 1976, roughly 40% of papers at computer architecture conferences came from industry. By ISCA 2025, that share had collapsed to under 4%! The research community and the systems running inference at scale have drifted apart.</p>
+
+
+
+
+      <p>Ma and Patterson enumerate six trends compounding the problem. Mixture of Experts expands memory footprint and communication overhead: training wins, inference pays. Reasoning models push L_out into regimes where the quadratic term dominates everything. Multimodal generation demands larger data types. Long context means more KV cache to stream. RAG injects external knowledge as additional context. Diffusion is the exception since it demands more FLOPs rather than more bandwidth. </p>
+
+
+
+
+      <p>They distill the crisis into two challenges. First, memory. HBM is increasingly expensive: both $/GB capacity and $/GBps bandwidth grew 1.35× from 2023 to 2025. DRAM density scaling is decelerating. SRAM-only solutions like Cerebras and Groq could not scale to modern LLM sizes and had to retrofit external DRAM. Second, latency. Before LLMs, datacenter inference ran on single chips. Now it requires multi-chip systems with frequent communication. For small, frequent messages, latency trumps bandwidth. The interconnects designed for training optimize for the wrong metric.</p>
+
+
+
+
+     <p>Their proposed directions follow logically. High Bandwidth Flash stacks flash dies like HBM, achieving 10× capacity with HBM-like bandwidth, suitable for frozen weights and slow-changing context, though not for rapidly-updated KV caches. Processing-Near-Memory places compute logic adjacent to memory dies rather than on them, allowing 1000× larger shards than Processing-In-Memory while dramatically simplifying the software story. 3D compute-logic stacking shortens data paths for 2-3× lower power at the same bandwidth. Low-latency interconnect rethinks network topology for small frequent messages rather than large bulk transfers.</p>
+
+
+     <p>Among these trends, diffusion stands out because it is often discussed as a separate problem with separate hardware implications. In reality, diffusion inference exposes many of the same structural weaknesses as autoregressive decoding, just in a less extreme form. Understanding this distinction clarifies why Ma and Patterson's proposed hardware directions are not diffusion-specific, but inference-general.</p>
+
+
+     <h3>Diffusion vs Autoregressive Inference: Hardware Implications</h3>
+
+
+     <p>Ma and Patterson's treatment of diffusion deserves careful interpretation, because it is easy to draw the wrong lesson.</p>
+
+
+     <p>Diffusion models generate an entire output in parallel and then iteratively denoise it over many steps. Each denoising step consists of a relatively small forward pass applied to the full latent, followed by an update that feeds into the next step. From a hardware perspective, this creates a workload with many sequential iterations, limited batching opportunities, and frequent memory traffic. At small batch sizes, typical for interactive inference, each step is dominated less by arithmetic throughput and more by moving activations and parameters through the memory hierarchy.</p>
+
+
+     <p>At a glance, this makes diffusion look similar to autoregressive decoding. Both involve long chains of dependent steps. Both struggle to exploit the massive parallelism of GPUs. Both are latency sensitive at inference. This is why Ma and Patterson argue that diffusion inference is <em>not</em> a niche concern since it already stresses modern accelerators in ways that resemble emerging LLM inference workloads.</p>
+
+
+     <p>In diffusion, each denoising step still performs substantial dense computation over the full latent. Arithmetic intensity is modest and memory access patterns are relatively regular. As a result, diffusion inference often remains closer to the compute bandwidth balance that modern GPUs were designed for, especially when batch sizes are nontrivial or when denoising steps can be fused or pipelined.</p>
+
+
+     <p>Autoregressive decoding is fundamentally worse.</p>
+
+
+     <p>During decode, each new token requires attending over an ever-growing KV cache. The arithmetic work per token grows linearly with context length, but the memory traffic grows just as fast, and reuse is extremely limited. The arithmetic intensity of decode attention is on the order of 1 FLOP per byte, far below the roofline ridge point of modern accelerators. No amount of peak FLOPs can compensate for this. Performance is set by HBM bandwidth, memory latency, kernel launch overhead, and interconnect efficiency, not compute.</p>
+
+
+     <p>This leads to a key inversion:</p>
+     <ul>
+     <li>Diffusion inference stresses sequential execution on compute-heavy kernels</li>
+     <li>Autoregressive inference stresses memory movement on lightweight kernels</li>
+     </ul>
+
+
+     <p>From a hardware design perspective, these are very different!.</p>
+
+
+     <p>Diffusion benefits from accelerators that can sustain moderate compute throughput across many small, sequential steps with good on-chip reuse. Autoregressive decoding, by contrast, benefits almost entirely from reducing data movement: keeping KV caches close to compute, minimizing round-trips to HBM, and lowering latency for small, frequent memory accesses.</p>
+
+
+     <p>This distinction clarifies why Ma and Patterson do <em>not</em> claim diffusion is "worse" than autoregressive inference. Instead, diffusion serves as an early warning. It exposed the cost of sequential inference before LLM decoding fully did. Autoregressive models simply push the problem further by combining sequential dependence with extreme memory pressure.</p>
+
+
+     <p>From this perspective, hardware for diffusion models .</p>
+
+
+     <p>This framing also explains the logic behind the hardware proposals Ma and Patterson outline.</p>
+
+
+     <p>High Bandwidth Flash (HBF) targets the exploding capacity demands of inference. Frozen model weights, retrieval-augmented context, and static embeddings do not need HBM latency, but they do need far more capacity than HBM can economically provide. Stacking flash dies with HBM-like interfaces offers 10× capacity at acceptable bandwidth for these components. However, HBF is explicitly <em>not</em> suitable for rapidly updated KV caches, reinforcing the point that decode performance hinges on where mutable state lives.</p>
+
+
+     <p>Processing-Near-Memory (PNM) attacks the problem from another angle. Instead of moving data to compute, move compute closer to where data already resides. By placing logic adjacent to DRAM dies, PNM enables much larger memory shards than Processing-In-Memory while avoiding the programmability nightmare of logic-in-memory designs. For inference, this is especially attractive for attention-like workloads, where the dominant cost is reading large KV tensors rather than performing complex arithmetic.</p>
+
+
+     <p>3D stacking of compute and memory shortens physical data paths, reducing energy per bit and improving effective bandwidth. This matters less for training, where compute dominates, and far more for inference, where every token streams state through the memory hierarchy. A 2–3× reduction in energy per byte directly translates into either higher throughput or lower latency at fixed power.</p>
+
+
+     <p>Finally, low-latency interconnects emerge as a first-class concern. Training-oriented networks optimize for bulk transfers. Inference requires frequent, small messages, especially once KV caches and expert routing span multiple chips. When messages are small and frequent, latency dominates bandwidth, and traditional accelerator interconnects become the bottleneck.</p>
+
+
+     <p>Putting these together, the conclusion is sharper than it first appears.</p>
+
+
+     <p>Diffusion models revealed that sequential inference workloads strain conventional accelerators. Autoregressive LLMs demonstrate that memory-bound sequential inference fundamentally breaks the training-first hardware paradigm. The problem is not insufficient FLOPs. It is that the dominant operation at inference—streaming and updating state does not map cleanly onto hardware optimized for dense linear algebra.</p>
+
+
+     <p>From this angle, the future of inference hardware is not about making GPUs faster at what they already do well. It is about re-centering design around memory capacity, bandwidth, latency, and locality, with compute sized to match, not the other way around.</p>
+
+
+     <p>This is why Ma and Patterson's paper reads less like a proposal for one new accelerator and more like a diagnosis. The workloads are changing. Diffusion was the early symptom. Autoregressive reasoning models are the acute case. And unless hardware adapts, test-time scaling will remain theoretically appealing but practically constrained.</p>
+
+
+     <p>Once inference is understood as a memory-dominated, latency-sensitive workload, the importance of kernel design stops being an implementation detail and becomes a first-order architectural concern.</p>
+
+
+
+
+      <h2>GPU Kernels Matter</h2>
+
+
+
+
+      <p>This is also where GPU kernels start to matter in a very concrete way. Much of the discussion around test-time scaling treats the model as an abstract function. In practice, the performance envelope is set by a small number of kernels: attention, layernorm, matmuls, KV cache reads and writes. During decode, attention dominates, and attention is constrained by how efficiently we can move KV data through HBM and registers.</p>
+
+
+
+
+      <p>This is why kernel level innovations have had outsized impact compared to many architectural changes. They do not improve the model in a theoretic sense. They change the arithmetic intensity of the workload. They push decode closer to the ridge point of the roofline model, even if only marginally. When inference is memory-bound, a 2× reduction in memory traffic can matter more than a 10× increase in FLOPs.</p>
+
+
+
+
+      <p>FlashAttention, from Tri Dao and collaborators, introduced what should have been an obvious principle: attention algorithms should be IO-aware. Standard attention computes QK^T, stores the full N×N matrix to HBM, applies softmax, then multiplies by V. Three kernel launches. Two round-trips of a massive intermediate matrix through memory.</p>
+
+
+
+
+      <p>FlashAttention fuses everything into a single kernel using two techniques. Tiling loops through blocks of K and V, loading them from HBM to fast on-chip SRAM, computing local attention scores, and incrementally updating the output without materializing the full matrix. Online softmax computes running statistics so softmax can be applied incrementally, rescaling at the end for exact results.</p>
+
+
+
+
+      <p>The IO complexity drops from Θ(Nd + N²) HBM accesses to O(N²d²M⁻¹), where M is SRAM size. For typical values, this means up to 9× fewer HBM accesses. Wall-clock speedups of 2-4× follow directly.</p>
+
+
+
+
+      <p>FlashAttention-2 restructured the algorithm for better parallelism, achieving up to 70% theoretical max FLOPs on A100. FlashAttention-3 targets Hopper, exploiting asynchronous WGMMA and TMA instructions to overlap memory movement with arithmetic, interleaving block-wise matmul with softmax computation, and supporting FP8 with block quantization for accuracy. The result: 1.6-2.0× speedup over FlashAttention-2 in FP16, close to 1.2 PFLOPS in FP8.</p>
+
+
+
+
+      <p>FlashInfer, from Zihao Ye and collaborators, addresses a different problem: production inference faces heterogeneous workloads that no single kernel handles optimally. Prefill is compute-bound; decode is memory-bound. Batched inference differs from single-request. Sparse attention patterns from KV-cache pruning methods need specialized handling. Multi-head attention, grouped-query attention, and multi-head latent attention all have different optimal configurations.</p>
+
+
+
+
+      <p>FlashInfer sits between inference frameworks and kernel implementations, routing workloads to appropriate backends. Its key contributions: a unified block-sparse format that handles paged attention, prefix sharing, and explicit sparsity with the same kernel; JIT compilation that specializes kernels at runtime rather than pre-compiling every configuration; load-balanced scheduling that partitions variable-length requests into uniform tiles; and cascade attention that computes shared KV segments once rather than reloading them per-request.</p>
+
+
+
+
+      <p>The performance numbers justify the complexity: 29-69% inter-token-latency reduction versus Triton backends, 28-30% latency reduction for long-context inference, 13-17% speedup for parallel generation.</p>
+
+
+
+
+      <p>Once we look at things through this lens, it becomes clear that many "model" ideas are actually kernel ideas in disguise. Sparse attention is not just a modeling choice. It is a statement about memory access patterns. Hierarchical reasoning is not just cognitive inspiration. It is a way to decouple fast, bandwidth-sensitive loops from slow, compute-heavy ones. Even chain-of-thought length is a hardware parameter once decode dominates cost.</p>
+
+
+
+
+      <h2>Continual Learning Approaches</h2>
+
+
+
+
+      <p>I am also very interested in recent advances in continual learning, especially work that reframes adaptation as something that happens at inference rather than through explicit retraining. The recent paper on end-to-end test-time training for long context (Tandon et. al.) takes this further than previous approaches.</p>
+
+
+
+
+      <p>The core framing is whether long-context modeling is an architecture design problem or a continual learning problem.</p>
+
+
+
+
+      <p>Standard approaches build architectures that attend over more tokens (i.e. full attention with extrapolating position embeddings, sparse patterns, or recurrent alternatives like Mamba). TTT-E2E takes a different approach where they use a standard Transformer with sliding-window attention, constant cost per token. But let the model continue learning at inference via next-token prediction on incoming context. Compress context into weights rather than storing it in a KV cache.</p>
+
+
+
+
+      <p>The architecture creates two memory systems. Short-term memory comes from sliding-window attention over a fixed window, say 8K tokens. This is the model's working memory for recent syntax and local references, with O(1) cost per token. Long-term memory comes from updated MLP weights. As the window advances and tokens fall out of view, TTT-E2E takes gradient steps on next-token prediction loss, updating only the MLP layers in the final quarter of model blocks.</p>
+
+
+
+
+      <p>Training uses meta-learning to optimize initial weights for test-time adaptation. The inner loop processes context as a stream at test time, updating dynamic MLPs via gradient descent. The outer loop at training time optimizes initial weights so adaptation is fast and effective. This requires gradients of gradients.</p>
+
+
+
+
+      <p>A dual-track MLP design prevents catastrophic forgetting. Each TTT block has a static MLP frozen at inference, preserving pretrained capabilities, and a dynamic MLP updated during test-time training to store document-specific information.</p>
+
+
+
+
+      <p>The results directly address the scaling problem I outlined earlier. TTT-E2E scales with context length like full attention does, while efficient alternatives plateau. At 128K context, Mamba 2, GatedDeltaNet, and vanilla sliding-window attention hit a ceiling around 32K tokens. TTT-E2E matches full attention's scaling and actually achieves slightly lower loss for 3B models. The authors attribute this to a more focused task being full attention must generalize across all future tokens, while TTT-E2E only needs to be good at the present mini-batch since adaptation produces new weights for future tokens.</p>
+
+
+
+
+      <p>It's a great result that TTT-E2E maintains constant inference latency regardless of context length. At 128K context, 2.7× speedup over full attention. At 2M context, 35× speedup. It is fundamentally O(1) per token, like an RNN, but with full-attention-like scaling in loss.</p>
+
+
+
+
+      <p>However, there are a few current downsides to this new model, mainly being that training is 3.4× slower than standard pretraining at short contexts due to gradients of gradients, though this inverts at long contexts where full attention's quadratic cost dominates. TTT-E2E also underperforms full attention on precise retrieval tasks as it prioritizes compression over verbatim recall. The current implementation also cannot use FlashAttention during training because the standard API does not support gradients of gradients.</p>
+
+
+
+
+      <p>From the perspective of everything above, it is worth being precise about what problem this actually solves. Test-time training reduces distribution shift by letting the model adjust, but it does not fundamentally change the cost structure of inference. If adaptation itself requires backpropagation, auxiliary optimizers, or multiple forward passes per token, then it is still competing for the same scarce resource: memory bandwidth and latency at decode. In other words, continual learning helps what the model computes, but not how expensively it computes it.</p>
+
+
+
+
+      <p>What becomes interesting is combining these ideas → inference-time adaptation mechanisms that are explicitly designed to be bandwidth-aware. For example, updates that operate on compressed state, low rank adapters, or statistics already resident in on-chip memory. If test time training can be expressed as small, local updates that reuse KV or intermediate activations rather than restreaming them, then it starts to fit naturally into the inference first framing. Otherwise, it risks becoming another form of "reasoning" that looks good algorithmically but collapses under deployment constraints.</p>
+
+
+
+
+      <p>The implication is that the next phase of progress is unlikely to come from scaling any single axis in isolation. Bigger models help, but only until decode dominates. More test-time compute helps, but only until memory bandwidth collapses efficiency. Better algorithms help, but only if they map cleanly onto hardware.</p>
+
+
+
+
+      <p>This all points to the increasing importance of hw-sw codesign with inference-first models, kernels designed alongside architectures, and hardware that treats memory movement as a top priority. That might mean models with fewer layers and more expressive per-layer computation, attention mechanisms that aggressively bound context, or even new execution models that blur the line between training and inference without paying the full cost of either.</p>
+
+
+
+
+      <p>I don't think the takeaway is that test-time compute is a dead end. It's very much the opposite and it's not just a prompting trick. Traditionally, an L layer transformer is mathematically a circuit with depth L. With test time compute, generating T chain-of-thought tokens allows the model to achieve L × T total sequential operations, effectively changing a fixed depth architecture into a circuit with depth L × T. We know this is the fundamental paradigm OpenAI's o1 and o3, DeepSeek-R1, and other reasoning models use, but there is still lots of cool research and engineering to do.</p>
+
+
+
+
+      <p>Training scaling got us to the current frontier, but whether we can actually use that capability at scale is going to be decided by inference, kernels, and hardware.</p>
+
+
+
+
+      <p>If we want models that reason more at inference, we need architectures that make reasoning cheap, not just possible. That means inference-first model design, explicit cost models during training, and hardware-aware objectives. More efficient reasoning and silicon architecture that reduces data movement is going to push this frontier. These are the problems I'm currently most excited to work on, on an ML algorithm, systems software, and hardware engineering level.</p>
+
+  </div>
 </body>
 </html>
+
+
+
+
+
+
+
