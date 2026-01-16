@@ -5,6 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Abiral Shakya</title>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <!-- Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-XXXXXXXXXX');
+    </script>
     <style>
         * {
             margin: 0;
@@ -17,7 +25,7 @@
             color: #333;
             line-height: 1.65;
             padding: 3rem 2rem;
-            max-width: 900px;
+            max-width: 1200px;
             margin: 0 auto;
         }
         a {
@@ -46,7 +54,7 @@
             color: #666;
             font-style: italic;
         }
-        
+
         /* Navigation tabs */
         .nav-tabs {
             display: flex;
@@ -62,7 +70,7 @@
         .nav-tabs a.active {
             color: #8b6d47;
         }
-        
+
         header {
             margin-bottom: 2rem;
         }
@@ -81,7 +89,7 @@
             font-style: italic;
             margin-bottom: 1rem;
         }
-        
+
         /* Social links */
         nav {
             display: flex;
@@ -89,7 +97,7 @@
             font-size: 0.9rem;
             margin-bottom: 1.5rem;
         }
-        
+
         .main-content {
             display: flex;
             flex-direction: column;
@@ -105,7 +113,7 @@
             text-align: justify;
             font-size: 1rem;
         }
-        
+
         /* Image section */
         .image-section {
             display: flex;
@@ -128,7 +136,7 @@
             filter: grayscale(80%);
             opacity: 0.85;
         }
-        
+
         .caption {
             margin-top: 0.5rem;
             font-size: 0.75rem;
@@ -137,7 +145,7 @@
             text-align: center;
             max-width: 240px;
         }
-        
+
         section {
             margin-bottom: 2rem;
         }
@@ -167,7 +175,7 @@
             font-size: 0.95rem;
             line-height: 1.8;
         }
-        
+
         /* Thoughts page */
         .thoughts-content {
             display: none;
@@ -259,8 +267,8 @@
             color: #666;
             font-style: italic;
         }
-        
-        @media (max-width: 768px) {
+
+        @media (max-width: 1024px) {
             body {
                 padding: 2rem 1.5rem;
             }
@@ -290,12 +298,13 @@
     </style>
 </head>
 <body>
+
     <!-- Navigation Tabs -->
     <div class="nav-tabs">
         <a href="#" class="active" onclick="showPage('home'); return false;">Home</a>
         <a href="#" onclick="showPage('thoughts'); return false;">Thoughts</a>
     </div>
-    
+
     <!-- Home Page -->
     <div class="home-content active">
         <header>
@@ -303,49 +312,49 @@
                 <h1>Hi, I'm Abiral.</h1>
                 <div>I'm a sophomore at Princeton, studying electrical and computer engineering & physics.</div>
             </div>
-            
+
             <div class="main-content">
                 <div class="bio-section">
                     <p>I'm interested in robot behavior, human reasoning, kernel eng, and hardware accelerators. Currently, I'm working on rl & worlds for robots and tpu architecture from scratch.</p>
                     <p>Previously, I worked on rl environments at <a href="https://architectlabs.com" target="_blank">Architect Labs</a>, memory hardware at <a href="https://www.keplercompute.com" target="_blank">Kepler Computing</a>, researched materials physics at <a href="https://www.princeton.edu/" target="_blank">Princeton</a> and <a href="https://www.cornell.edu/" target="_blank">Cornell</a>, and programmed award winning autonomous robots.</p>
                 </div>
-                
+
                 <div class="image-section">
                     <div style="display: flex; flex-direction: column; align-items: center;">
-                        <img src="images/robert-noyce.jpg" 
-                             alt="Robert Noyce" 
+                        <img src="images/robert-noyce.jpg"
+                             alt="Robert Noyce"
                              class="hero-image">
                         <div class="caption">Robert Noyce: physicist, integrated circuit co-inventor, Intel co-founder</div>
                     </div>
                 </div>
             </div>
-            
+
             <nav>
                 <a href="https://github.com/abiralshakya" target="_blank">GitHub</a>
                 <a href="https://linkedin.com/in/abiralshakya" target="_blank">LinkedIn</a>
                 <a href="https://x.com/abiralxshakya" target="_blank">X</a>
                 <a href="mailto:abiral@princeton.edu">Email</a>
             </nav>
-            
+
             <section class="personal-photo-section">
-            </div>
+            </section>
         </section>
         </header>
-        
+
     </div>
-    
+
     <!-- Thoughts Page -->
     <div class="thoughts-content">
         <div class="thoughts-list">
             <h2></h2>
-            <a href="#" onclick="loadThought('modern_models_hardware.md'); return false;" class="thought-link">On Scaling Modern Models on Modern Hardware</a>
+            <a href="thoughts/modern_models_hardware.html" class="thought-link">On Scaling Modern Models on Modern Hardware</a>
         </div>
         <div id="thought-content" class="thought-display" style="display: none;"></div>
         <div class="empty-state" id="thoughts-empty">
-        
+
         </div>
     </div>
-    
+
     <script>
         function showPage(page) {
             // Hide all content
