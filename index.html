@@ -103,6 +103,8 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 3rem;
+            margin-left: 1.5rem;
+            margin-right: 1.5rem;
         }
         .nav-tabs {
             display: flex;
@@ -130,9 +132,51 @@
         .theme-toggle:hover {
             color: var(--link);
         }
+        .top-bar-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .profile-photo-top {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
 
         header {
             margin-bottom: 2rem;
+        }
+        .hero-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 2.5rem;
+            margin-bottom: 2rem;
+        }
+        .hero-row .title-section {
+            flex: 1;
+            min-width: 0;
+            max-width: 42em;
+            margin-left: 1.5rem;
+            margin-bottom: 0;
+        }
+        .intro-blurb {
+            font-size: 1rem;
+            color: var(--text);
+            line-height: 1.65;
+            margin-bottom: 1.2rem;
+        }
+        .hero-row .title-section .intro-blurb:last-child {
+            margin-bottom: 0;
+        }
+        .profile-photo-hero {
+            width: 220px;
+            height: 220px;
+            border-radius: 50%;
+            object-fit: cover;
+            object-position: 50% 28%;
+            flex-shrink: 0;
         }
         .title-section {
             margin-bottom: 1.5rem;
@@ -150,11 +194,12 @@
             margin-bottom: 1rem;
         }
 
-        nav {
+        header nav {
             display: flex;
             gap: 1.5rem;
             font-size: 0.95rem;
             margin-bottom: 1.5rem;
+            margin-left: 1.5rem;
         }
         nav a {
             color: var(--link);
@@ -168,11 +213,13 @@
             display: flex;
             flex-direction: column;
             gap: 2rem;
-            align-items: center;
+            align-items: stretch;
             margin-bottom: 2rem;
         }
         .bio-section {
             width: 100%;
+            max-width: 42em;
+            margin-left: 1.5rem;
         }
         .bio-section p {
             margin-bottom: 1.2rem;
@@ -332,6 +379,18 @@
             .page-inner {
                 padding: 2rem 1.5rem;
             }
+            .hero-row {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .hero-row .title-section {
+                margin-left: 0;
+                max-width: none;
+            }
+            .profile-photo-hero {
+                width: 140px;
+                height: 140px;
+            }
             .main-content {
                 flex-direction: column;
                 gap: 2rem;
@@ -366,24 +425,29 @@
             <a href="#" class="active" onclick="showPage('home'); return false;">Home</a>
             <a href="#" onclick="showPage('thoughts'); return false;">Thoughts</a>
         </div>
-        <button type="button" class="theme-toggle" id="theme-toggle" aria-label="Toggle light/dark mode">Dark</button>
+        <div class="top-bar-right">
+            <button type="button" class="theme-toggle" id="theme-toggle" aria-label="Toggle light/dark mode">Dark</button>
+        </div>
     </div>
 
     <!-- Home Page -->
     <div class="home-content active">
         <header>
-            <div class="title-section">
-                <h1>Hey, I'm Abiral !</h1>
-                <div>I'm a sophomore at Princeton studying electrical and computer engineering.</div>
+            <div class="hero-row">
+                <div class="title-section">
+                    <h1>Abiral Shakya</h1>
+                    <p class="intro-blurb">I am an undergraduate at Princeton studying electrical and computer engineering.
+                        I'm interested in data efficient world and robot models, human and machine reasoning, and lightning fast hardware and systems.</p>
+                    <p class="intro-blurb">I'm currently researching reasoning models advised by Professor <a href="https://tridao.me" target="_blank" rel="noopener">Tri Dao</a>. My research interests focus on hardware efficient and long context modelling, and intelligent spatial understanding. I also build in this space. </p>
+                </div>
+                <img src="profile.png" alt="Abiral" class="profile-photo-hero">
             </div>
 
             <div class="main-content">
                 <div class="bio-section">
-                    <p>I'm interested in robot behavior models, human and machine reasoning, and efficient hardware and systems. I'm currently researching and engineering reasoning models and systems ML advised by Prof. Tri Dao.</p>
-                    <p>My friends and I started Tiger Tapeout to bring hardware culture to Princeton, we work on heterogenous compute and design custom silicon and compilers.</p>
-                    <p>Previously, I worked on rl and reasoning at <a href="https://architectlabs.com" target="_blank">Architect Labs</a>, memory hardware and firmware at <a href="https://www.keplercompute.com" target="_blank">Kepler Computing</a>, researched electron spin and optomechanics at Princeton and Cornell, and programmed award winning autonomous robots.</p>
-                    <p>Check out my thoughts page for some of my thoughts.</p>
-                    <p>P.S. I enjoy writing my sparse thoughts on sticky notes! I use a lot of sticky notes. I also make beats, debate ethics, listen to indie rap & indie french pop, build robot hardware in my spare time, and am a PNW nature lover !</p>
+                    <p>My friends and I started Tiger Tapeout to bring hardware culture to Princeton, we work on heterogenous compute and design custom silicon, kernels, and compilers.</p>
+                    <p>Previously, I worked on RL and reasoning for verilog design intregation at <a href="https://architectlabs.com" target="_blank">Architect Labs</a>, firmware and drivers for ferroelectric memory at <a href="https://www.keplercompute.com" target="_blank">Kepler Computing</a>, researched bulk spin polarization for dense computational logic and orbital angular momentum of optomechanical gyroscopes at Cornell, and programmed award winning <a href="https://www.thebluealliance.com/team/6443/2024" target="_blank">autonomous robots</a>.</p>
+                    <p>P.S. I use a lot of sticky notes! I also make beats, debate ethics, listen to indie rap & french pop, and enjoy Pacific Northwest nature. </p>
                 </div>
 
             </div>
@@ -433,78 +497,36 @@
         }
         document.getElementById('theme-toggle').addEventListener('click', toggleTheme);
 
-        // Multiple humps (stochastic heights/widths, moving) + birds flocking right
+        // One bird flying across (no mountains)
         (function() {
             if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
             var canvas = document.getElementById('bg-canvas');
             if (!canvas) return;
             var ctx = canvas.getContext('2d');
-            var numHumps = 9;
-            var humps = [];
-            for (var h = 0; h < numHumps; h++) {
-                humps.push({
-                    phase: h * 2.1,
-                    phaseW: h * 1.3,
-                    phaseH: h * 0.9
-                });
-            }
-            var birds = [];
-            function initBirds(cw) {
-                birds.length = 0;
-                birds.push({ x: cw * 0.3, flap: 0 });
-            }
+            var bird = { x: 0, flap: 0 };
             function resize() {
                 canvas.width = window.innerWidth;
                 canvas.height = window.innerHeight;
-                initBirds(canvas.width);
-            }
-            function mountainY(x, cw, ch, t) {
-                var base = ch * 0.9;
-                var y = base;
-                var slow = t * 0.2;
-                for (var h = 0; h < numHumps; h++) {
-                    var center = cw * (0.08 + 0.88 * (h / (numHumps - 1))) + 55 * Math.sin(slow + humps[h].phase);
-                    var sigma = 50 + 85 * (0.6 + 0.4 * Math.sin(slow * 0.8 + humps[h].phaseW));
-                    var rise = ch * (0.03 + 0.09 * (0.7 + 0.3 * Math.sin(slow * 0.7 + humps[h].phaseH)));
-                    var g = Math.exp(-Math.pow((x - center) / sigma, 2));
-                    y -= rise * g;
-                }
-                return y;
+                bird.x = canvas.width * 0.2;
             }
             function draw() {
                 var isDark = document.documentElement.classList.contains('dark');
                 var cw = canvas.width, ch = canvas.height;
-                var t = Date.now() * 0.0012;
                 ctx.fillStyle = isDark ? '#0c0c10' : '#f2f4f7';
                 ctx.fillRect(0, 0, cw, ch);
+                bird.x += 0.5;
+                if (bird.x > cw + 30) bird.x = -30;
+                bird.flap += 0.12;
+                var by = ch * 0.35 + Math.sin(bird.flap * 0.5) * 8;
+                var wing = 4 + Math.sin(bird.flap) * 2;
+                ctx.strokeStyle = isDark ? 'rgba(140,175,240,0.6)' : 'rgba(15,45,100,0.55)';
+                ctx.lineWidth = 2.2;
+                ctx.lineCap = 'round';
                 ctx.beginPath();
-                ctx.moveTo(0, ch);
-                ctx.lineTo(0, mountainY(0, cw, ch, t));
-                var step = 6;
-                for (var x = step; x <= cw + 50; x += step) {
-                    ctx.lineTo(x, mountainY(x, cw, ch, t));
-                }
-                ctx.lineTo(cw + 50, ch);
-                ctx.closePath();
-                ctx.fillStyle = isDark ? 'rgba(55,85,140,0.38)' : 'rgba(25,55,120,0.32)';
-                ctx.fill();
-                for (var i = 0; i < birds.length; i++) {
-                    var b = birds[i];
-                    b.x += 0.42;
-                    if (b.x > cw + 30) b.x = -30 - Math.random() * 60;
-                    b.flap += 0.15;
-                    var bx = b.x;
-                    var by = mountainY(bx, cw, ch, t) - 12;
-                    var wing = 4 + Math.sin(b.flap) * 2;
-                    ctx.strokeStyle = isDark ? 'rgba(140,175,240,0.55)' : 'rgba(15,45,100,0.5)';
-                    ctx.lineWidth = 2.2;
-                    ctx.lineCap = 'round';
-                    ctx.beginPath();
-                    ctx.moveTo(bx - 6, by);
-                    ctx.lineTo(bx, by + wing);
-                    ctx.lineTo(bx + 6, by);
-                    ctx.stroke();
-                }
+                ctx.moveTo(bird.x - 6, by);
+                ctx.lineTo(bird.x, by + wing);
+                ctx.lineTo(bird.x + 6, by);
+                ctx.stroke();
                 requestAnimationFrame(draw);
             }
             resize();
