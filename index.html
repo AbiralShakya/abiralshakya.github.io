@@ -170,13 +170,19 @@
         .hero-row .title-section .intro-blurb:last-child {
             margin-bottom: 0;
         }
-        .profile-photo-hero {
+        .profile-photo-hero-wrap {
             width: 220px;
             height: 220px;
             border-radius: 50%;
+            overflow: hidden; /* ensures zoom stays inside the circle */
+            flex-shrink: 0;
+        }
+        .profile-photo-hero {
+            width: 100%;
+            height: 100%;
             object-fit: cover;
             object-position: 50% 28%;
-            flex-shrink: 0;
+            transform: none;
         }
         .title-section {
             margin-bottom: 1.5rem;
@@ -390,7 +396,7 @@
                 gap: 1.5rem;
                 margin-bottom: 2rem;
             }
-            .hero-row .profile-photo-hero {
+            .hero-row .profile-photo-hero-wrap {
                 order: -1;
                 width: 160px;
                 height: 160px;
@@ -451,18 +457,17 @@
             <div class="hero-row">
                 <div class="title-section">
                     <h1>Abiral Shakya</h1>
-                    <p class="intro-blurb">I am an undergraduate at Princeton studying electrical and computer engineering.
-                        I'm interested in data efficient world and robot behavior models, human and machine reasoning, and lightning fast hardware and systems.</p>
-                    <p class="intro-blurb">I'm currently researching reasoning models advised by Professor <a href="https://tridao.me" target="_blank" rel="noopener">Tri Dao</a>. My research interests focus on hardware efficient and long context modelling, and intelligent spatial understanding. I also build in this space. </p>
+                    <p class="intro-blurb">I'm an undergraduate at Princeton studying electrical and computer engineering.
+                        I'm interested in data efficient world and robot behavior models, human and machine reasoning, and designing performance hardware and systems.</p>
+                    <p class="intro-blurb">I'm currently researching efficient reasoning models advised by Professor <a href="https://tridao.me" target="_blank" rel="noopener">Tri Dao</a>. My research interests focus on hardware efficient and long context modelling, and intelligent spatial understanding. I also build in this space. </p>
                 </div>
-                <img src="profile.png" alt="Abiral" class="profile-photo-hero">
+                <div class="profile-photo-hero-wrap"><img src="profile.png" alt="Abiral" class="profile-photo-hero"></div>
             </div>
 
             <div class="main-content">
                 <div class="bio-section">
                     <p>My friends and I started Tiger Tapeout to bring hardware culture to Princeton, we work on heterogeneous compute and design custom silicon, kernels, and compilers.</p>
-                    <p>Previously, I worked on RL and reasoning for verilog design integration at <a href="https://architectlabs.com" target="_blank">Architect Labs</a>, firmware and drivers for ferroelectric memory at <a href="https://www.keplercompute.com" target="_blank">Kepler Computing</a>, researched bulk spin polarization for dense computational logic and orbital angular momentum of optomechanical gyroscopes at Cornell, and programmed award winning <a href="https://www.thebluealliance.com/team/6443/2024" target="_blank">autonomous robots</a>.</p>
-                    <p>P.S. I use a lot of sticky notes! I also make beats, debate ethics, listen to indie rap & french pop, and enjoy Pacific Northwest nature. </p>
+                    <p>Previously, I worked on RL and test time training at <a href="https://architectlabs.com" target="_blank">Architect Labs</a>, memory firmware and drivers at <a href="https://www.keplercompute.com" target="_blank">Kepler Computing</a>, electron spin device physics at Cornell, custom software for award winning <a href="https://www.thebluealliance.com/team/6443/2024" target="_blank">autonomous robots</a>, and policy for sustainable datacenters.</p> 
                 </div>
 
             </div>
@@ -505,6 +510,7 @@
             var isDark = document.documentElement.classList.contains('dark');
             localStorage.setItem('theme', isDark ? 'dark' : 'light');
             updateToggleLabel();
+            if (typeof window.paintBackground === 'function') window.paintBackground();
         }
         function updateToggleLabel() {
             var btn = document.getElementById('theme-toggle');
@@ -512,41 +518,23 @@
         }
         document.getElementById('theme-toggle').addEventListener('click', toggleTheme);
 
-        // One bird flying across (no mountains)
+        // Static background only (no bird animation)
         (function() {
-            if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
             var canvas = document.getElementById('bg-canvas');
             if (!canvas) return;
             var ctx = canvas.getContext('2d');
-            var bird = { x: 0, flap: 0 };
-            function resize() {
+
+            function paintBackground() {
                 canvas.width = window.innerWidth;
                 canvas.height = window.innerHeight;
-                bird.x = canvas.width * 0.2;
-            }
-            function draw() {
                 var isDark = document.documentElement.classList.contains('dark');
-                var cw = canvas.width, ch = canvas.height;
                 ctx.fillStyle = isDark ? '#0c0c10' : '#f2f4f7';
-                ctx.fillRect(0, 0, cw, ch);
-                bird.x += 0.5;
-                if (bird.x > cw + 30) bird.x = -30;
-                bird.flap += 0.12;
-                var by = ch * 0.35 + Math.sin(bird.flap * 0.5) * 8;
-                var wing = 4 + Math.sin(bird.flap) * 2;
-                ctx.strokeStyle = isDark ? 'rgba(140,175,240,0.6)' : 'rgba(15,45,100,0.55)';
-                ctx.lineWidth = 2.2;
-                ctx.lineCap = 'round';
-                ctx.beginPath();
-                ctx.moveTo(bird.x - 6, by);
-                ctx.lineTo(bird.x, by + wing);
-                ctx.lineTo(bird.x + 6, by);
-                ctx.stroke();
-                requestAnimationFrame(draw);
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
             }
-            resize();
-            window.addEventListener('resize', resize);
-            requestAnimationFrame(draw);
+
+            window.paintBackground = paintBackground;
+            window.addEventListener('resize', paintBackground);
+            paintBackground();
         })();
 
         function showPage(page) {
