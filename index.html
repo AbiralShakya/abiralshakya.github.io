@@ -317,6 +317,7 @@
 
         /* Thoughts section styles */
         .thoughts-list {
+            margin-left: 1.5rem;
             margin-bottom: 2rem;
         }
         .thoughts-list h2 {
@@ -332,7 +333,8 @@
         }
         .thought-display {
             background: var(--thought-bg);
-            padding: 2rem;
+            /* Align the text column with Home's bio text */
+            padding: 2rem 2rem 2rem 1.5rem;
             border-radius: 4px;
             line-height: 1.7;
         }
@@ -419,6 +421,12 @@
                 margin-left: 0;
                 flex-wrap: wrap;
             }
+            .thoughts-list {
+                margin-left: 0;
+            }
+            .thought-display {
+                padding: 2rem 1rem 2rem 0;
+            }
             .image-section {
                 flex-direction: column;
                 align-items: center;
@@ -491,6 +499,7 @@
         <div class="thoughts-list">
             <h2></h2>
             <a href="thoughts/modern_models_hardware.html" class="thought-link">On Scaling Modern Models on Modern Hardware</a>
+                <a href="https://gradient.build/blog/vla-deployment/index.html" class="thought-link" target="_blank" rel="noopener">Deploying Robots in the Real World</a>
         </div>
         <div id="thought-content" class="thought-display" style="display: none;"></div>
         <div class="empty-state" id="thoughts-empty">
