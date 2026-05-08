@@ -162,7 +162,7 @@
             margin-bottom: 0;
         }
         .intro-blurb {
-            font-size: 1rem;
+            font-size: 0.9rem;
             color: var(--text);
             line-height: 1.65;
             margin-bottom: 1.2rem;
@@ -181,8 +181,8 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
-            object-position: 50% 28%;
-            transform: none;
+            object-position: 50% 38%;
+            transform: scale(1.28);
         }
         .title-section {
             margin-bottom: 1.5rem;
@@ -202,10 +202,13 @@
 
         header nav {
             display: flex;
-            gap: 1.5rem;
-            font-size: 0.95rem;
+            gap: 0.7rem;
+            font-size: 0.85rem;
             margin-bottom: 1.5rem;
             margin-left: 1.5rem;
+        }
+        .nav-separator {
+            color: var(--text-faint);
         }
         nav a {
             color: var(--link);
@@ -465,11 +468,11 @@
             <div class="hero-row">
                 <div class="title-section">
                     <h1>Abiral Shakya</h1>
-                    <p class="intro-blurb">I'm an undergraduate at Princeton studying ECE. I'm interested in hardware aware machine learning, performance hardware and systems, efficient model architecture, and spatial intelligence for robots. </p>
-                    <p class="intro-blurb">I'm currently researching kernels, model architecture, and efficient reasoning advised by Professor <a href="https://tridao.me" target="_blank" rel="noopener">Tri Dao</a>, and hardware aware world models for TPUs at <a href="https://research.google/" target="_blank" rel="noopener">Google</a>. </p>
-                    <p class ="intro-blurb"> I will be joining <a href="https://www.sailresearch.com/" target="_blank" rel="noopener">Sail Research</a> this summer to build efficient inference for long horizon agents. </p>
+                    <p class="intro-blurb">I'm an undergraduate at Princeton studying ECE. I work on kernels, model architecture, and efficient reasoning advised by Professor <a href="https://tridao.me" target="_blank" rel="noopener">Tri Dao</a>. I also research hardware efficiency and long context world models at <a href="https://research.google/" target="_blank" rel="noopener">Google</a>.</p>
+                    <p class="intro-blurb">I'm broadly interested in performance hardware and systems, efficient model architecture, and spatial intelligence for robots.</p>
+                    <p class="intro-blurb">I will be joining <a href="https://www.sailresearch.com/" target="_blank" rel="noopener">Sail Research</a> this summer to build efficient inference for background agents.</p>
                 </div>
-                <div class="profile-photo-hero-wrap"><img src="profile.png" alt="Abiral" class="profile-photo-hero"></div>
+                <div class="profile-photo-hero-wrap"><img src="profile.jpg" alt="Abiral" class="profile-photo-hero"></div>
             </div>
 
             
@@ -478,8 +481,11 @@
 
             <nav>
                 <a href="https://github.com/abiralshakya" target="_blank">GitHub</a>
+                <span class="nav-separator">/</span>
                 <a href="https://linkedin.com/in/abiralshakya" target="_blank">LinkedIn</a>
+                <span class="nav-separator">/</span>
                 <a href="https://x.com/abiralxshakya" target="_blank">X</a>
+                <span class="nav-separator">/</span>
                 <a href="mailto:abiral@princeton.edu">Email</a>
             </nav>
 
