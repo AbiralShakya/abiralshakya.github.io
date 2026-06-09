@@ -170,25 +170,11 @@
         .hero-row .title-section .intro-blurb:last-child {
             margin-bottom: 0;
         }
-        .profile-photo-hero-wrap {
-            width: 220px;
-            height: 220px;
-            border-radius: 50%;
-            overflow: hidden; /* ensures zoom stays inside the circle */
-            flex-shrink: 0;
-        }
-        .profile-photo-hero {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            object-position: 50% 38%;
-            transform: scale(1.28);
-        }
         .title-section {
             margin-bottom: 1.5rem;
         }
         h1 {
-            font-size: 1.8rem;
+            font-size: 1.6rem;
             font-weight: 400;
             margin-bottom: 1.25rem;
             color: var(--text);
@@ -401,11 +387,6 @@
                 gap: 1.5rem;
                 margin-bottom: 2rem;
             }
-            .hero-row .profile-photo-hero-wrap {
-                order: -1;
-                width: 160px;
-                height: 160px;
-            }
             .hero-row .title-section {
                 order: 0;
                 margin-left: 0;
@@ -468,11 +449,10 @@
             <div class="hero-row">
                 <div class="title-section">
                     <h1>Abiral Shakya</h1>
-                    <p class="intro-blurb">I'm an undergraduate at Princeton studying ECE. I work on kernels, model architecture, and efficient reasoning at Princeton, where I'm fortunate to be advised by Professor <a href="https://tridao.me" target="_blank" rel="noopener">Tri Dao</a>. I also research hardware efficiency and long context world models at <a href="https://research.google/" target="_blank" rel="noopener">Google</a>.</p>
-                    <p class="intro-blurb">I'm broadly interested in performance hardware and systems, efficient model architecture, and spatial intelligence for robots.</p>
-                    <p class="intro-blurb">I will be joining <a href="https://www.sailresearch.com/" target="_blank" rel="noopener">Sail Research</a> this summer to build efficient inference for background agents.</p>
+                    <p class="intro-blurb">I'm an undergraduate at Princeton studying ECE. I'm broadly interested in performance engineering, efficient learning, and spatial reasoning.</p>
+                    <p class="intro-blurb">I work on ml systems and model architecture at Princeton, where I'm fortunate to be advised by Professor <a href="https://tridao.me" target="_blank" rel="noopener">Tri Dao</a>. I also research hardware efficiency and world to action at <a href="https://research.google/" target="_blank" rel="noopener">Google</a>.</p>
+                    <p class="intro-blurb">Currently, I work on post training research and performance at <a href="https://www.sailresearch.com/" target="_blank" rel="noopener">Sail Research</a>.</p>
                 </div>
-                <div class="profile-photo-hero-wrap"><img src="profile.jpg" alt="Abiral" class="profile-photo-hero"></div>
             </div>
 
             
@@ -529,7 +509,7 @@
         }
         document.getElementById('theme-toggle').addEventListener('click', toggleTheme);
 
-        // Static background only (no bird animation)
+        // Static background only
         (function() {
             var canvas = document.getElementById('bg-canvas');
             if (!canvas) return;
