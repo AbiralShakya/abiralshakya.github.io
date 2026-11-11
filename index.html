@@ -32,6 +32,10 @@
     .role { grid-template-columns: 28px 1fr; column-gap: 12px; }
     .role img { width: 28px; height: 28px; margin-top: .2rem; }
   }
+  .former { list-style: none; }
+  .former li { display: flex; align-items: center; gap: .6rem; margin-bottom: .45rem; }
+  .former img { width: 46px; height: 20px; object-fit: contain; object-position: center; }
+  .former .when { color: #777; font-size: 15px; margin-left: auto; }
   .links { margin-top: 2.25rem; display: flex; gap: 1.25rem; font-size: 15px; }
   .links a { color: #777; }
   .links a:hover { color: #111; text-decoration: none; }
@@ -50,29 +54,13 @@
   <p>I study electrical and computer engineering at Princeton, where I work on ML and systems at <a class="ul" href="https://dao-lab.ai/">Dao AI Lab</a>, and hardware efficiency and world action models as a TPU student researcher supported by <a class="ul" href="https://research.google/">Google</a>.</p>
 
   <h2>Formerly</h2>
-  <div class="role">
-    <img src="logos/sail.svg" alt="">
-    <div>
-      <div class="head"><span><b><a href="https://www.sailresearch.com/">Sail Research</a></b>, member of technical staff intern</span><span class="when">May – Aug 2026</span></div>
-      <div class="desc">Hardware performance, memory efficient test time scaling for linear attention, OPSD and numerics.</div>
-    </div>
-  </div>
-  <div class="role">
-    <img src="logos/architect.svg" alt="">
-    <div>
-      <div class="head"><span><b><a href="https://architectlabs.com/">Architect Labs</a></b>, member of technical staff intern</span><span class="when">Jul – Sep 2025</span></div>
-      <div class="desc">RL, synthetic data, and test time training for computer architecture reasoning models.</div>
-    </div>
-  </div>
-  <div class="role">
-    <img src="logos/kepler.png" alt="">
-    <div>
-      <div class="head"><span><b><a href="https://keplercompute.com/">Kepler Computing</a></b>, hardware systems intern</span><span class="when">Jun – Aug 2024</span></div>
-      <div class="desc">Physics simulation and firmware for FeRAM.</div>
-    </div>
-  </div>
+  <ul class="former">
+    <li><img src="logos/sail.svg" alt=""><a href="https://www.sailresearch.com/">Sail Research</a><span class="when">2026</span></li>
+    <li><img src="logos/architect.svg" alt=""><a href="https://architectlabs.com/">Architect Labs</a><span class="when">2025</span></li>
+    <li><img class="wide" src="logos/kepler.png" alt=""><a href="https://keplercompute.com/">Kepler Computing</a><span class="when">2024</span></li>
+  </ul>
 
-  <p style="margin-top:2rem">In my free time you can find me enjoying <a id="berry" onclick="document.getElementById('pic').classList.toggle('on')">strawberries 🍓</a>.</p>
+  <p style="margin-top:1.75rem">In my free time you can find me enjoying <a id="berry" onclick="document.getElementById('pic').classList.toggle('on')">strawberries 🍓</a>.</p>
   <img id="pic" src="strawberries.jpg" alt="Holding a freshly picked strawberry">
 
   <div class="links">
