@@ -9,65 +9,69 @@
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body {
     background: #fff; color: #111;
-    font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, Arial, sans-serif;
-    font-size: 17px; line-height: 1.65;
+    font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+    font-size: 16px; line-height: 1.5;
     max-width: 620px; margin: 0 auto; padding: 5rem 1.5rem;
     -webkit-font-smoothing: antialiased;
   }
-  h1 { font-size: 2rem; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 1.25rem; }
+  h1 { font-size: 24px; font-weight: 600; letter-spacing: -0.05em; margin-bottom: 1.25rem; }
   p { margin-bottom: 1rem; }
   a { color: #111; text-decoration: none; }
   a:hover { text-decoration: underline; text-underline-offset: 3px; }
-  a.ul { color: inherit; text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; }
+  a.ul { color: #1d5bb8; text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; }
 
 
   h2 { font-size: 15px; font-weight: 400; color: #777; margin: 2.25rem 0 1rem; }
-  .role { display: grid; grid-template-columns: 40px 1fr; column-gap: 14px; align-items: start; margin-bottom: 1.2rem; }
-  .role img { width: 40px; height: 40px; object-fit: contain; display: block; }
+  .role { display: grid; grid-template-columns: 28px 1fr; column-gap: 12px; align-items: start; margin-bottom: 1.2rem; }
+  .role img { width: 28px; height: 28px; margin-top: .15rem; object-fit: contain; display: block; }
   .head { display: flex; justify-content: space-between; column-gap: 1rem; row-gap: 0; flex-wrap: wrap; }
   .when { color: #777; font-size: 15px; white-space: nowrap; }
   .desc { color: #444; font-size: 15.5px; }
 
   @media (max-width: 600px) {
-    .role { grid-template-columns: 28px 1fr; column-gap: 12px; }
-    .role img { width: 28px; height: 28px; margin-top: .2rem; }
+    .role { grid-template-columns: 22px 1fr; column-gap: 10px; }
+    .role img { width: 22px; height: 22px; margin-top: .2rem; }
   }
-  .former { list-style: none; }
-  .former li { display: flex; align-items: center; gap: .6rem; margin-bottom: .45rem; }
-  .former img { width: 46px; height: 20px; object-fit: contain; object-position: center; }
-  .former .when { color: #777; font-size: 15px; margin-left: auto; }
   .links { margin-top: 2.25rem; display: flex; gap: 1.25rem; font-size: 15px; }
   .links a { color: #777; }
   .links a:hover { color: #111; text-decoration: none; }
 
-  #berry { cursor: pointer; font-weight: 600; }
-  #berry:hover { text-decoration: none; }
-  #pic { display: none; width: 180px; margin: .25rem 0 1rem; border-radius: 6px; }
-  #pic.on { display: block; }
 </style>
 </head>
 <body>
   <h1>Abiral Shakya</h1>
 
-  <p>I think about efficient compute.</p>
-
-  <p>I study electrical and computer engineering at Princeton, where I work on ML and systems at <a class="ul" href="https://dao-lab.ai/">Dao AI Lab</a>, and hardware efficiency and world action models as a TPU student researcher supported by <a class="ul" href="https://research.google/">Google</a>.</p>
+  <p>I study electrical and computer engineering at Princeton, where I work on ML and systems at <a class="ul" href="https://dao-lab.ai/">Dao AI Lab</a>. I also research compute and data efficient world action models as a TPU student researcher supported by <a href="https://research.google/">Google</a>.</p>
 
   <h2>Formerly</h2>
-  <ul class="former">
-    <li><img src="logos/sail.svg" alt=""><a href="https://www.sailresearch.com/">Sail Research</a><span class="when">2026</span></li>
-    <li><img src="logos/architect.svg" alt=""><a href="https://architectlabs.com/">Architect Labs</a><span class="when">2025</span></li>
-    <li><img class="wide" src="logos/kepler.png" alt=""><a href="https://keplercompute.com/">Kepler Computing</a><span class="when">2024</span></li>
-  </ul>
+  <div class="role">
+    <img src="logos/sail.svg" alt="">
+    <div>
+      <div class="head"><span><b><a href="https://www.sailresearch.com/">Sail Research</a></b>, Technical Staff Intern</span><span class="when">May – Aug 2026</span></div>
+      <div class="desc">Hardware performance, memory efficient test time scaling for linear attention, OPSD and numerics</div>
+    </div>
+  </div>
+  <div class="role">
+    <img src="logos/architect.svg" alt="">
+    <div>
+      <div class="head"><span><b><a href="https://architectlabs.com/">Architect Labs</a></b>, Technical Staff Intern</span><span class="when">Jul – Sep 2025</span></div>
+      <div class="desc">RL, synthetic data, and test time training for computer architecture reasoning models</div>
+    </div>
+  </div>
+  <div class="role">
+    <img src="logos/kepler.png" alt="">
+    <div>
+      <div class="head"><span><b><a href="https://keplercompute.com/">Kepler Computing</a></b>, Hardware Systems Intern</span><span class="when">Jun – Aug 2024</span></div>
+      <div class="desc">Physics simulation and firmware for FeRAM</div>
+    </div>
+  </div>
 
-  <p style="margin-top:1.75rem">In my free time you can find me enjoying <a id="berry" onclick="document.getElementById('pic').classList.toggle('on')">strawberries 🍓</a>.</p>
-  <img id="pic" src="strawberries.jpg" alt="Holding a freshly picked strawberry">
 
   <div class="links">
     <a href="mailto:abiral@princeton.edu">abiral@princeton.edu</a>
     <a href="https://x.com/abiralxshakya">x</a>
     <a href="https://github.com/abiralshakya">gh</a>
-    <a href="https://linkedin.com/in/abiralshakya">lk</a>
+    <a href="https://linkedin.com/in/abiralshakya">li</a>
   </div>
 </body>
 </html>
